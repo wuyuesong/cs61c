@@ -1,0 +1,7 @@
+1. clean
+2. all
+3. gcc
+4. c99
+5. 可以使用$(FOO)引用FOO变量
+6. Darwin是macos的内核
+7. 第31行从目标文件创建了lfsr程序
