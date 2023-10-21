@@ -22,24 +22,38 @@ double dotp_naive(double* x, double* y, int arr_size) {
 // EDIT THIS FUNCTION PART 1
 double dotp_manual_optimized(double* x, double* y, int arr_size) {
   double global_sum = 0.0;
+  int num_threads; 
+  #pragma omp parallel
+  {
+    num_threads = omp_get_num_threads();
+  }
+  double *sum = (double *)malloc(num_threads * sizeof(double));
+  memset(sum, 0, sizeof(sum));
 #pragma omp parallel
   {
-#pragma omp for
-    for (int i = 0; i < arr_size; i++)
-#pragma omp critical
-      global_sum += x[i] * y[i];
+    int id = omp_get_thread_num();
+    double now = 0.0;
+    for (int i = id; i < arr_size; i += num_threads) {
+        now += x[i] * y[i];
+    }
+    sum[id] = now;
   }
+  for (int i = 0; i < num_threads; i ++) {
+    global_sum += sum[i];
+  }
+  free(sum);
   return global_sum;
 }
+
+
 
 // EDIT THIS FUNCTION PART 2
 double dotp_reduction_optimized(double* x, double* y, int arr_size) {
   double global_sum = 0.0;
 #pragma omp parallel
   {
-#pragma omp for
+#pragma omp for reduction(+:global_sum)
     for (int i = 0; i < arr_size; i++)
-#pragma omp critical
       global_sum += x[i] * y[i];
   }
   return global_sum;
@@ -59,11 +73,13 @@ char* compute_dotp(int arr_size) {
   }
 
   int num_threads = omp_get_max_threads();
+//   int num_threads = 4; // for test, because it takes too much time when the number of threads is big
   for (int i = 1; i <= num_threads; i++) {
     omp_set_num_threads(i);
     start_time = omp_get_wtime();
     for (int j = 0; j < REPEAT; j++) result = dotp_manual_optimized(x, y, arr_size);
     run_time = omp_get_wtime() - start_time;
+    // printf("Manual Optimized: %d thread(s) took %f seconds\n", i, run_time);
     pos += sprintf(pos, "Manual Optimized: %d thread(s) took %f seconds\n", i, run_time);
 
     // verify result is correct (within some threshold)
@@ -83,6 +99,8 @@ char* compute_dotp(int arr_size) {
     }
 
     run_time = omp_get_wtime() - start_time;
+    // printf("Reduction Optimized: %d thread(s) took %f seconds\n",
+                //    i, run_time);
     pos += sprintf(pos, "Reduction Optimized: %d thread(s) took %f seconds\n",
                    i, run_time);
 
