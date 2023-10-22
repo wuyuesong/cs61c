@@ -29,18 +29,47 @@ Image *readData(char *filename)
     char P3[3];
     uint32_t  t;
     FILE * fp;
+    FILE *outputFile;
     Image *img = (Image *)malloc(sizeof(Image));
     fp = fopen(filename, "r");
+    if (fp == NULL) {
+        outputFile = freopen("/dev/tty", "w", stdout);
+        perror("file not exists");
+        fclose(outputFile);
+        fclose(fp);
+        return NULL;
+    }
     fscanf(fp, "%s", P3);
+    if (strcmp(P3, "P3") != 0) {
+        outputFile = freopen("/dev/tty", "w", stdout);
+        perror("file format is not P3");
+        fclose(outputFile);
+        fclose(fp);
+        return NULL;
+    }
+    img->cols = -1; img->rows = -1;
     fscanf(fp, "%u %u", &img->cols, &img->rows);
     fscanf(fp, "%u", &t);
+    if (img->cols == -1 || img->rows == -1 || t != 255) {
+        outputFile = freopen("/dev/tty", "w", stdout);
+        perror("file format is not P3");
+        fclose(outputFile);
+        fclose(fp);
+        return NULL;
+    }
     img->image = (Color **)malloc((img->rows) * sizeof(Color *));
     for (int i = 0; i < img->rows; i ++) {
         img->image[i] = (Color *)malloc((img->cols) * sizeof(Color));
     }
     for (int i = 0; i < img->rows; i ++) {
         for (int j = 0; j < img->cols; j ++) {
-            fscanf(fp, "%hhu%hhu%hhu", &img->image[i][j].R, &img->image[i][j].G,&img->image[i][j].B);
+            if (fscanf(fp, "%hhu%hhu%hhu", &img->image[i][j].R, &img->image[i][j].G,&img->image[i][j].B) != 3) {
+                outputFile = freopen("/dev/tty", "w", stdout);
+                perror("file colur format error");
+                fclose(outputFile);
+                fclose(fp);
+                return NULL;
+            }
         }
     }
     fclose(fp);

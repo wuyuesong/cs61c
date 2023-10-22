@@ -22,12 +22,38 @@
 Color *evaluateOnePixel(Image *image, int row, int col)
 {
 	//YOUR CODE HERE
+    Color *color = (Color *)malloc(sizeof(Color));
+    if ((image->image[row][col].B & 1) == 1) {
+        color->R = 255;
+        color->G = 255;
+        color->B = 255;
+    } else {
+        color->R = 0;
+        color->G = 0;
+        color->B = 0;
+    }
+    return color;
 }
 
 //Given an image, creates a new image extracting the LSB of the B channel.
 Image *steganography(Image *image)
 {
 	//YOUR CODE HERE
+    Image *ret = (Image *)malloc(sizeof(Image)); 
+    ret->rows = image->rows;
+    ret->cols = image->cols;
+    ret->image = (Color **)malloc((image->rows) * sizeof(Color *));
+    for (int i = 0; i < image->rows; i ++) {
+        ret->image[i] = (Color *)malloc((image->cols) * sizeof(Color));
+    }
+    for (int i = 0; i < image->rows; i ++) {
+        for (int j = 0; j < image->cols; j ++) {
+            Color *new_color = evaluateOnePixel(image, i, j);
+            ret->image[i][j] = *new_color;
+            free(new_color);
+        }
+    }
+    return ret;
 }
 
 /*
@@ -46,4 +72,21 @@ Make sure to free all memory before returning!
 int main(int argc, char **argv)
 {
 	//YOUR CODE HERE
+    char *filename;
+    if (argc != 2) {
+        exit(-1);
+    }
+    filename = argv[1];
+    Image *image;
+    Image *sceret_image;
+    image = readData(filename);
+    if (image == NULL) {
+        exit(-1); 
+    }
+    sceret_image = steganography(image);
+    writeData(sceret_image);
+
+    freeImage(image);
+    freeImage(sceret_image);
+    return 0;
 }
