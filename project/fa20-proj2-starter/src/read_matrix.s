@@ -27,16 +27,98 @@
 read_matrix:
 
     # Prologue
-	
+	addi sp, sp, -36
+    sw, ra, 0(sp)
+    sw, s0, 4(sp)
+    sw, s1, 8(sp)
+    sw, s2, 12(sp)
+    sw, s3, 16(sp)
+    sw, s4, 20(sp)
+    sw, s5, 24(sp)
+    sw, s6, 28(sp)
+    sw, s7, 32(sp)
+
+    mv s0, a0 # s0 for filename
+    mv s1, a1 # s1 for address of rows
+    mv s2, a2 # s2 for address of cols
+
+    # open file 
+    mv a1, s0
+    li a2, 0
+    jal fopen  # jump to fopen and save position to ra
+    mv s3, a0 # s3 for file descriptor
+    blt s3, x0, error90 # if s3 < x0 then error90
+
+    # read row
+    mv a1, s3
+    mv a2, s1
+    li a3, 4
+    jal fread
+    blt a0, x0, error91 # if a0 < x0 then error91
+    
+    # read col
+    mv a1, s3
+    mv a2, s2
+    li a3, 4
+    jal fread
+    blt a0, x0, error91 # if a0 < x0 then error91
+    
+    # malloc
+    lw s1, 0(s1)
+    lw s2, 0(s2)
+    li s2, 4
+    mul s1, s1, s2 
+    mul s1, s1, s2 # s1 for total bytes now
+    mv a0, s1
+    jal malloc  # jump to malloc and save position to ra
+    mv s4, a0 # save address for s4
+    beq s4, x0, error88 # if s4 == x0 then error88
+
+    # read matrix
+    mv a1, s3
+    mv a2, s4
+    mv a3, s1
+    jal fread
+    blt a0, x0, error91 # if a0 < x0 then error91
 
 
+    # close file 
+    mv a1, s3
+    jal fclose  # jump to fclose and save position to ra
+    blt a0, x0, error92 # if a0 < x0 then error92
 
+    # mv array address to a0
+    mv a0, s4
 
-
-
+    # lw a1, 0(a0)
+    # jal print_int
 
 
     # Epilogue
-
-
+    lw, ra, 0(sp)
+    lw, s0, 4(sp)
+    lw, s1, 8(sp)
+    lw, s2, 12(sp)
+    lw, s3, 16(sp)
+    lw, s4, 20(sp)
+    lw, s5, 24(sp)
+    lw, s6, 28(sp)
+    lw, s7, 32(sp)
+    addi sp, sp, 36
     ret
+
+error88:
+    li a1, 88 # a1 = 88
+    j exit2  # jump to exit2
+
+error90:
+    li a1, 90 # a1 = 90
+    j exit2  # jump to exit2
+
+error91:
+    li a1, 91 # a1 = 91
+    j exit2  # jump to exit2
+
+error92:
+    li a1, 92 # a1 = 92
+    j exit2  # jump to exit2
