@@ -24,7 +24,7 @@ dot:
     ble a4, x0, error2 # if a4 <= x0 then error2
 
     li t0, 4
-    mul a3, a3, t0 # mul byte size for stride
+    mul a3, a3, t0 # mul word size for stride
     mul a4, a4, t0
 
     add t0, x0, x0 # t0 for answears
