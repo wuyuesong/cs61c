@@ -16,7 +16,7 @@ relu:
     # Prologue
     li t0 1
     blt a1, t0, error # if a1 < 1 then error
-    add t0, x0, t0
+    add t0, x0, x0
 
 loop_start:
     lw t1, 0(a0) # load a element of array 

@@ -17,18 +17,26 @@
 argmax:
 
     # Prologue
-
+    li t0 1
+    blt a1, t0, error # if a1 < 1 then error
+    add t0, x0, x0
+    add t3, x0, x0
 
 loop_start:
-
+    lw t1, 0(a0) # load a element of array 
+    ble t1, t3, loop_continue # if t1 <= t3 then loop_continue
+    add t3, x0, t1
 
 loop_continue:
-
+    addi a0, a0, 4 
+    addi t0, t0, 1
+    blt t0, a1, loop_start # if t0 < a1 then loop_start
 
 loop_end:
-    
-
     # Epilogue
-
-
+    add a0, x0, t3
     ret
+
+error:
+    li a1, 77 # a1 = 77
+    j exit2  # jump to exit2
