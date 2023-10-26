@@ -30,8 +30,29 @@ dot:
     add t0, x0, x0 # t0 for answears
     add t1, x0, x0 # t1 for itr
 
+    
+    
+
 loop_start:
-    lw t2, 0(a0)
+
+    
+
+    lw t2, 0(a0)    
+
+
+    # addi sp, sp, -12
+    # sw ra, 0(sp)
+    # sw a1, 4(sp)
+    # sw a0, 8(sp)
+    # lw a1, 0(a0)
+    # jal print_int
+    # li a1, '\n'
+    # jal print_char
+    # lw ra, 0(sp)
+    # lw a1, 4(sp)
+    # lw a0, 8(sp)
+    # addi sp, sp, 12
+
     lw t3, 0(a1)
     mul t2, t2, t3
     add t0, t2, t0
@@ -39,6 +60,20 @@ loop_start:
     add a0, a0, a3
     add a1, a1, a4
     addi t1, t1, 1
+
+    # addi sp, sp, -12
+    # sw ra, 0(sp)
+    # sw a1, 4(sp)
+    # sw a0, 8(sp)
+    # mv a1, t1
+    # jal print_int
+    # li a1, '\n'
+    # jal print_char
+    # lw ra, 0(sp)
+    # lw a1, 4(sp)
+    # lw a0, 8(sp)
+    # addi sp, sp, 12
+
     blt t1, a2, loop_start # if t1 < a2 then loop_start   
 
 loop_end:

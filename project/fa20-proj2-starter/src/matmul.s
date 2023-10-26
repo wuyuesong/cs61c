@@ -67,10 +67,11 @@ inner_loop_start:
     add a2, a2, x0
     li a3, 1
     add a4, a5, x0
-
+    
     jal ra, dot
 
     add t5, a0, x0 # save the ret
+
 
     lw a0, 0(sp)
     lw a1, 4(sp)
@@ -90,9 +91,11 @@ inner_loop_start:
 
     sw t5, 0(a6)
 
+    
 
 inner_loop_end:
     addi t1, t1, 1
+
     add a3, a3, t3
     add a6, a6, t3
     blt t1, a5, inner_loop_start # if t1 < a5 then inner_loop_start
@@ -135,3 +138,13 @@ error74:
 # lw a1, 4(sp)
 # lw ra, 0(sp)
 # addi sp, sp, 16
+
+
+# addi sp, sp, -8
+# sw ra, 0(sp)
+# sw a1, 4(sp)
+# li a1, 'd'
+# jal print_char
+# lw ra, 0(sp)
+# lw a1, 4(sp)
+# addi sp, sp, 8

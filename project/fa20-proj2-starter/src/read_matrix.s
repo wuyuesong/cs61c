@@ -49,25 +49,43 @@ read_matrix:
     mv s3, a0 # s3 for file descriptor
     blt s3, x0, error90 # if s3 < x0 then error90
 
+    # for debug
+    # mv a1, s0
+    # jal print_str
+    # li a1, '\n'
+    # jal print_char
+
     # read row
     mv a1, s3
     mv a2, s1
     li a3, 4
     jal fread
     blt a0, x0, error91 # if a0 < x0 then error91
-    
+
+    # for debug   
+    # lw a1, 0(a2)
+    # jal print_int
+    # li a1, '\n'
+    # jal print_char
+
     # read col
     mv a1, s3
     mv a2, s2
     li a3, 4
     jal fread
     blt a0, x0, error91 # if a0 < x0 then error91
+
+    # for debug
+    # lw a1, 0(a2)
+    # jal print_int
+    # li a1, '\n'
+    # jal print_char
     
     # malloc
     lw s1, 0(s1)
     lw s2, 0(s2)
-    li s2, 4
     mul s1, s1, s2 
+    li s2, 4
     mul s1, s1, s2 # s1 for total bytes now
     mv a0, s1
     jal malloc  # jump to malloc and save position to ra
@@ -75,12 +93,19 @@ read_matrix:
     beq s4, x0, error88 # if s4 == x0 then error88
 
     # read matrix
+    li s6, 0
+    li s7, 4
     mv a1, s3
     mv a2, s4
-    mv a3, s1
+    li a3, 4
+loop_read:
+    add a2, s6, s4
     jal fread
-    blt a0, x0, error91 # if a0 < x0 then error91
+    blt a0, s7, error91 # if a0 < x0 then error91
+    addi s6, s6, 4
+    blt s6, s1, loop_read 
 
+    
 
     # close file 
     mv a1, s3
@@ -105,6 +130,9 @@ read_matrix:
     lw, s6, 28(sp)
     lw, s7, 32(sp)
     addi sp, sp, 36
+
+    
+
     ret
 
 error88:

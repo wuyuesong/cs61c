@@ -76,7 +76,7 @@ write_matrix:
 
 
     # close file 
-    mv a1, s3
+    mv a1, s0
     jal fclose  # jump to fclose and save position to ra
     blt a0, x0, error95 # if a0 < x0 then error95
 

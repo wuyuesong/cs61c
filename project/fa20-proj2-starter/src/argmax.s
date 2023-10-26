@@ -21,11 +21,13 @@ argmax:
     blt a1, t0, error # if a1 < 1 then error
     add t0, x0, x0
     add t3, x0, x0
+    add t4, x0, x0 # t4 for ans
 
 loop_start:
     lw t1, 0(a0) # load a element of array 
     ble t1, t3, loop_continue # if t1 <= t3 then loop_continue
     add t3, x0, t1
+    mv t4, t0
 
 loop_continue:
     addi a0, a0, 4 
@@ -34,7 +36,7 @@ loop_continue:
 
 loop_end:
     # Epilogue
-    add a0, x0, t3
+    add a0, x0, t4
     ret
 
 error:

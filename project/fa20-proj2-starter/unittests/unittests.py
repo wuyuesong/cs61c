@@ -113,7 +113,7 @@ class TestArgmax(TestCase):
         # call the `argmax` function
         t.call("argmax")
         # check that the register a0 contains the correct output
-        t.check_scalar('a0', 12)
+        t.check_scalar('a0', 4)
         # generate the `assembly/TestArgmax_test_simple.s` file and run it through venus
         t.execute()
         
@@ -429,15 +429,45 @@ class TestClassify(TestCase):
         ref_file = "outputs/test_basic_main/reference0.bin"
         args = ["inputs/simple0/bin/m0.bin", "inputs/simple0/bin/m1.bin",
                 "inputs/simple0/bin/inputs/input0.bin", out_file]
+        t.input_scalar("a2", 1)
         # call classify function
         t.call("classify")
         # generate assembly and pass program arguments directly to venus
         t.execute(args=args)
 
         # compare the output file and
-        raise NotImplementedError("TODO")
-        # TODO
+        t.check_file_output(out_file, ref_file)
         # compare the classification output with `check_stdout`
+        t.check_stdout('2')
+        
+    # less arg    
+    def test_simple0_input0_error1(self):
+        t = self.make_test()
+        out_file = "outputs/test_basic_main/student0.bin"
+        ref_file = "outputs/test_basic_main/reference0.bin"
+        args = ["inputs/simple0/bin/m0.bin", "inputs/simple0/bin/m1.bin",
+                "inputs/simple0/bin/inputs/input0.bin"]
+        t.input_scalar("a2", 1)
+        # call classify function
+        t.call("classify")
+        # generate assembly and pass program arguments directly to venus
+        t.execute(args=args, code=89)
+
+        # compare the output file and
+        # compare the classification output with `check_stdout`
+        
+    # malloc error  
+    def test_simple0_input0_error2(self):
+        t = self.make_test()
+        out_file = "outputs/test_basic_main/student0.bin"
+        ref_file = "outputs/test_basic_main/reference0.bin"
+        args = ["inputs/simple0/bin/m0.bin", "inputs/simple0/bin/m1.bin",
+                "inputs/simple0/bin/inputs/input0.bin", out_file]
+        t.input_scalar("a2", 1)
+        # call classify function
+        t.call("classify")
+        # generate assembly and pass program arguments directly to venus
+        t.execute(args=args, code=88, fail='malloc')
 
     @classmethod
     def tearDownClass(cls):
